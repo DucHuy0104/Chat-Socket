@@ -59,13 +59,32 @@ export function createSocket(io) {
       }
     });
 
-    socket.on('leave_room', (room) => {
-      const username = socketToUser.get(socket.id);
-      try {
-        socket.leave(room);
-        socket.to(room).emit('system', `${username} đã rời phòng ${room}`);
-      } catch {}
-    });
+    socket.on('leave_room', async (room) => {
+  const username = socketToUser.get(socket.id);
+
+  try {
+    // Rời phòng
+    socket.leave(room);
+
+    // Gửi thông báo cho các user còn lại
+    socket.to(room).emit('system', `${username} đã rời phòng ${room}`);
+
+    // Kiểm tra và xoá phòng nếu trống
+    const roomInfo = io.sockets.adapter.rooms.get(room);
+
+    if (!roomInfo || roomInfo.size === 0) {
+      console.log(`🧹 Xóa phòng vì không còn ai: ${room}`);
+
+      await Room.deleteOne({ name: room });
+      await Message.deleteMany({ room });
+
+      io.emit('system', `Phòng ${room} đã bị xoá vì không còn người tham gia`);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+});
+
 
     socket.on('chat_message', async ({ room, content }, ack) => {
       const username = socketToUser.get(socket.id);
@@ -90,17 +109,26 @@ export function createSocket(io) {
     });
 
     socket.on('disconnect', async () => {
-      const username = socketToUser.get(socket.id);
-      socketToUser.delete(socket.id);
-      if (username) {
-        onlineUsers.delete(username);
-        io.emit('users_online', Array.from(onlineUsers.keys()));
-        io.emit('system', `${username} đã thoát`);
-        const u = await User.findOne({ username });
-        if (u) { u.socketId = ''; u.lastActive = new Date(); await u.save(); }
-      }
-      console.log('❌ Client disconnected', socket.id);
-    });
+  const username = socketToUser.get(socket.id);
+
+  // Xử lý phòng user đang tham gia
+  const rooms = Array.from(socket.rooms).filter(r => r !== socket.id);
+  for (const r of rooms) {
+    socket.leave(r);
+    await clearRoomIfEmpty(r);
+  }
+
+  socketToUser.delete(socket.id);
+  if (username) {
+    onlineUsers.delete(username);
+    io.emit('users_online', Array.from(onlineUsers.keys()));
+    io.emit('system', `${username} đã thoát`);
+    const u = await User.findOne({ username });
+    if (u) { u.socketId = ''; u.lastActive = new Date(); await u.save(); }
+  }
+  console.log('❌ Client disconnected', socket.id);
+});
+
 
     socket.on('get_users_online', (ack) => {
       ack && ack({ users: Array.from(onlineUsers.keys()) });
