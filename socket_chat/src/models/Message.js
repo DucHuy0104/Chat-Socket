@@ -6,7 +6,10 @@ const MessageSchema = new mongoose.Schema({
   room: { type: String },                   // nếu public
   to: { type: String },                     // nếu private
   isPrivate: { type: Boolean, default: false },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+
+  // ⭐ danh sách username đã đọc tin nhắn này
+  readBy: { type: [String], default: [] }
 });
 
 MessageSchema.index({ room: 1, createdAt: -1 });
