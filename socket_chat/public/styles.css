@@ -23,3 +23,20 @@ aside h3 { margin:10px 0 }
 #usersOnline li { padding:6px 8px; border-radius:8px; background:#f5f5f5; margin-bottom:6px; cursor:pointer }
 #usersOnline li:hover { background:#e0e0e0 }
 #toGeneral { background:#8e24aa; color:#fff; border:none; padding:8px 10px; border-radius:8px; cursor:pointer }
+
+/* ➕ THÊM MỚI: hiển thị "đang gõ..." dưới khung chat */
+#typingStatus {
+  padding: 2px 14px 6px;
+  font-size: 13px;
+  font-style: italic;
+  color: #777;
+  min-height: 18px; /* để khung không bị giật khi ẩn/hiện */
+}
+
+/* ➕ THÊM MỚI: chữ "Đã đọc" dưới tin nhắn của bạn */
+.read-flag {
+  font-size: 12px;
+  color: #1e88e5;
+  margin-top: 2px;
+  text-align: right;
+}
