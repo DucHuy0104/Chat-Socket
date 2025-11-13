@@ -1,0 +1,25 @@
+* { box-sizing: border-box }
+body { margin: 0; font-family: system-ui, Arial, Helvetica, sans-serif; background: #f4f6fb; color: #222; }
+.container { max-width: 1100px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+header { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; background:#283593; color:#fff; }
+main { display:grid; grid-template-columns: 280px 1fr; gap:16px; padding: 16px; }
+aside { background:#fff; border:1px solid #e1e1e1; border-radius:12px; padding:12px; box-shadow: 0 4px 14px rgba(0,0,0,.04)}
+aside h3 { margin:10px 0 }
+.rooms .room { padding:6px 10px; border-radius:8px; background:#e8eaf6; margin-bottom:6px; cursor:pointer; }
+.rooms .room.active { background:#c5cae9; font-weight:700 }
+.room-create { display:flex; gap:6px; margin-top:10px }
+.room-create input { flex:1; padding:8px 10px; border:1px solid #ddd; border-radius:10px }
+.room-create button { padding:8px 10px; border:none; border-radius:10px; background:#1e88e5; color:#fff; cursor:pointer }
+.chat { background:#fff; border:1px solid #e1e1e1; border-radius:12px; display:flex; flex-direction:column; height: calc(100vh - 140px); box-shadow: 0 4px 14px rgba(0,0,0,.04) }
+.chat-header { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #eee }
+#messages { list-style: none; padding: 10px 14px; margin: 0; overflow-y:auto; flex:1 }
+#messages li { margin: 6px 0; padding: 6px 8px; border-radius: 8px; background:#f5f5f5 }
+#messages li.me { background:#e3f2fd }
+#messages li.system { background:#ede7f6; color:#4a148c; font-style:italic }
+#form { display:flex; gap:8px; padding: 10px 14px; border-top:1px solid #eee }
+#input { flex:1; padding:8px 10px; border:1px solid #ddd; border-radius:10px }
+#form button { padding:8px 10px; border:none; border-radius:10px; background:#1e88e5; color:#fff; cursor:pointer }
+#usersOnline { list-style:none; padding:0; margin:0 }
+#usersOnline li { padding:6px 8px; border-radius:8px; background:#f5f5f5; margin-bottom:6px; cursor:pointer }
+#usersOnline li:hover { background:#e0e0e0 }
+#toGeneral { background:#8e24aa; color:#fff; border:none; padding:8px 10px; border-radius:8px; cursor:pointer }

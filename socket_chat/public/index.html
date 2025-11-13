@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Socket Chat</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Socket Chat</h1>
+      <div id="me"></div>
+    </header>
+    <main>
+      <aside>
+        <section>
+          <h3>Phòng</h3>
+          <div class="rooms" id="rooms"></div>
+          <div class="room-create">
+            <input id="roomName" placeholder="Tên phòng mới" />
+            <button id="btnCreateRoom">Tạo/Tham gia</button>
+          </div>
+        </section>
+        <section>
+          <h3>Đang online</h3>
+          <ul id="usersOnline"></ul>
+        </section>
+      </aside>
+      <section class="chat">
+        <div class="chat-header">
+          <div id="target">Room: <span id="currentRoom">general</span></div>
+          <button id="toGeneral">Về phòng</button>
+        </div>
+        <ul id="messages"></ul>
+        <form id="form">
+          <input id="input" autocomplete="off" placeholder="Nhập tin nhắn..." />
+          <button>Gửi</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
