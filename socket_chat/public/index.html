@@ -27,12 +27,20 @@
           <ul id="usersOnline"></ul>
         </section>
       </aside>
+
       <section class="chat">
         <div class="chat-header">
           <div id="target">Room: <span id="currentRoom">general</span></div>
           <button id="toGeneral">Về phòng</button>
         </div>
+
+        <!-- Danh sách tin nhắn -->
         <ul id="messages"></ul>
+
+        <!-- ⭐ Dòng mới thêm vào để hiển thị “đang gõ...” -->
+        <div id="typingStatus" style="color:#777; font-style:italic; margin:4px 0 8px 4px;"></div>
+
+        <!-- Form nhập tin -->
         <form id="form">
           <input id="input" autocomplete="off" placeholder="Nhập tin nhắn..." />
           <button>Gửi</button>
