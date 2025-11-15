@@ -6,6 +6,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+   <!-- Socket.IO + client.js -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/client.js"></script>
+
+  <!-- Script chuyển Dark / Light mode -->
+    <!-- Socket.IO + client.js -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/client.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -443,6 +451,21 @@
       box-shadow: 0 12px 24px rgba(129, 140, 248, 0.25);
     }
 
+#btnCreateRoom {
+  padding: 6px 10px !important;
+  font-size: 10px !important;
+  min-width: 82px;
+  letter-spacing: 0.2px;
+}
+
+  #btnCreateRoom {
+  padding: 6px 8px;
+  font-size: 11px;
+  max-width: 75px;
+  text-align: center;
+  letter-spacing: 0.2px;
+}
+
     body.dark .btn-secondary {
       background: #020617;
       color: #a5b4fc;
@@ -688,7 +711,7 @@
           </div>
           <div class="room-input-row">
             <input id="roomName" class="input" placeholder="Nhập tên phòng mới..." />
-            <button id="btnCreateRoom" class="btn-primary">Tạo / Tham gia</button>
+            <button id="btnCreateRoom" class="btn-primary">Tạo/Tham gia</button>
           </div>
           <div id="rooms" class="room-list">
             <!-- room sẽ được client.js render -->
@@ -741,14 +764,7 @@
     </div>
   </div>
 
-  <!-- Socket.IO + client.js -->
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/client.js"></script>
 
-  <!-- Script chuyển Dark / Light mode -->
-    <!-- Socket.IO + client.js -->
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/client.js"></script>
 
   <script>
     (function () {
