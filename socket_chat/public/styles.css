@@ -40,3 +40,105 @@ aside h3 { margin:10px 0 }
   margin-top: 2px;
   text-align: right;
 }
+    /* LOGIN OVERLAY */
+
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      z-index: 50;
+    }
+
+    .login-overlay.hidden {
+      display: none;
+    }
+
+    .login-card {
+      width: 340px;
+      max-width: 90vw;
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 22px 20px 18px;
+      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-soft);
+      text-align: left;
+    }
+
+    .login-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .login-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 14px;
+    }
+
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 14px;
+    }
+
+    .login-field label {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .login-field input {
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border-soft);
+      outline: none;
+      font-size: 13px;
+      background: var(--card-bg-alt);
+      color: var(--text-main);
+      transition: border 0.15s, box-shadow 0.15s;
+    }
+
+    .login-field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
+    }
+
+    .login-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .login-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      color: #f9fafb;
+      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.65);
+      transition: transform 0.1s, box-shadow 0.1s, filter 0.1s;
+    }
+
+    .login-btn:hover {
+      filter: brightness(1.05);
+      transform: translateY(-1px);
+      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.8);
+    }
+
+    .login-btn:active {
+      transform: translateY(1px) scale(0.98);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.55);
+    }
