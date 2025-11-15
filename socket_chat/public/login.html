@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng nhập</title>
+  <link rel="stylesheet" href="auth.css">
+</head>
+
+<body class="auth-container">
+
+  <div class="auth-box">
+    <h2>Đăng nhập</h2>
+
+    <input id="loginEmail" class="input" type="email" placeholder="Email...">
+    <input id="loginPass" class="input" type="password" placeholder="Mật khẩu...">
+
+    <button class="btn" onclick="login()">Login</button>
+
+    <p class="switch-link">
+      <a href="register.html">Tạo tài khoản mới</a>
+    </p>
+
+    <div id="errorBox" class="error"></div>
+
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>
