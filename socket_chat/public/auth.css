@@ -104,3 +104,59 @@ h2 {
 .auth-box, .auth-box * {
     box-sizing: border-box;
 }
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: 0.2s;
+}
+
+/* Hiệu ứng khi click vào (focus) */
+input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.6);
+    background-color: #ffffff;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    
+    /* Hiệu ứng 3D */
+    box-shadow: 0 5px 0 #005ec2;
+}
+
+/* Khi rê chuột */
+button:hover {
+    background-color: #008cff;
+}
+
+/* Khi nhấn (active) */
+button:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #005ec2;
+    background-color: #006fe0;
+}
+
+.switch-link a {
+    color: #007bff;
+    text-decoration: none;
+    transition: 0.25s ease;
+}
+
+/* hiệu ứng sáng khi hover */
+.switch-link a:hover {
+    color: #4dafff;
+    text-shadow: 0 0 20px rgba(0, 140, 255, 0.9),
+                 0 0 30px rgba(123, 195, 255, 0.7);
+}
