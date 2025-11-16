@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Demo Chat Client</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body { font-family: Arial; }
+    #messages { border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: auto; }
+    #typing { color: green; font-style: italic; }
+  </style>
+</head>
+<body>
+  <h2>Demo Chat</h2>
+  <input id="username" placeholder="Tên bạn">
+  <button id="joinBtn">Vào phòng</button>
+  <br><br>
+  <div id="messages"></div>
+  <input id="message" placeholder="Gõ tin nhắn..." style="width:300px;">
+  <div id="typing"></div>
+
+  <script>
+    const socket = io('http://localhost:3000');
+    let room = 'room1';
+    let username = '';
+    let timeout;
+
+    const messagesDiv = document.getElementById('messages');
+    const typingDiv = document.getElementById('typing');
+
+    // join room
+    document.getElementById('joinBtn').addEventListener('click', () => {
+      username = document.getElementById('username').value || 'User';
+      socket.emit('joinRoom', room, username);
+    });
+
+    // input gõ
+    document.getElementById('message').addEventListener('input', () => {
+      socket.emit('typing', { room, username });
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        socket.emit('stopTyping', room);
+      }, 1000);
+    });
+
+    // hiển thị đang gõ
+    socket.on('userTyping', msg => { typingDiv.innerText = msg; });
+    socket.on('userStopTyping', () => { typingDiv.innerText = ''; });
+
+    // hiển thị online/offline
+    socket.on('userStatus', msg => {
+      const p = document.createElement('p');
+      p.innerText = msg;
+      messagesDiv.appendChild(p);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+  </script>
+</body>
+</html>
