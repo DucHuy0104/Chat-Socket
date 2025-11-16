@@ -150,11 +150,14 @@ function generateShootingStars(amount = 20) {
         const st = document.createElement("div");
         st.className = "shooting-star";
 
-        // vị trí ngẫu nhiên theo trục dọc
-        st.style.top = Math.random() * 60 + "%";
+        // THÊM: Vị trí ngang ngẫu nhiên (từ 0% đến 100% màn hình)
+        st.style.left = Math.random() * 100 + "vw";
+        
+        // vị trí ngẫu nhiên theo trục dọc (Giữ nguyên)
+        st.style.top = Math.random() * 110 + "%";
 
         // delay random cho mỗi vệt sao
-        st.style.animationDelay = (Math.random() * 5).toFixed(2) + "s";
+        st.style.animationDelay = (Math.random() * 5).toFixed(2) + "s"
 
         wrap.appendChild(st);
     }
@@ -162,6 +165,6 @@ function generateShootingStars(amount = 20) {
 
 // Khi trang load, tạo luôn sao
 document.addEventListener("DOMContentLoaded", () => {
-    generateStars(250);          // nhiều sao hơn
-    generateShootingStars(30);   // 30 sao bắn rơi
+    generateStars(1000);          // nhiều sao hơn
+    generateShootingStars(150); // 150 sao bắn rơi
 });
