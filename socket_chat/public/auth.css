@@ -6,6 +6,9 @@ body {
   align-items: center;
   background: #eef2ff;
   font-family: sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #0b0b2b, #1b2735 70%, #090a0f);
+  overflow: hidden;
 }
 
 .auth-box {
@@ -55,6 +58,7 @@ body {
 }
 
 .auth-box {
+    z-index: 1;
     width: 360px;
     background: white;
     padding: 25px;
@@ -159,4 +163,58 @@ button:active {
     color: #4dafff;
     text-shadow: 0 0 20px rgba(0, 140, 255, 0.9),
                  0 0 30px rgba(123, 195, 255, 0.7);
+}
+
+/* --- SAO NỀN TỰ SINH --- */
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: twinkle 2s infinite ease-in-out alternate;
+}
+
+/* Tạo 200 sao */
+body .stars .star {
+  animation-duration: calc(1.5s + (random(200) * 0.05s));
+}
+
+/* Lấp lánh */
+@keyframes twinkle {
+  0% { opacity: 0.2; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.6); }
+}
+
+/* --- SAO BĂN RƠI (shooting star) --- */
+.shooting-star {
+  position: absolute;
+  width: 140px;
+  height: 2px;
+  background: linear-gradient(90deg, white, transparent);
+  opacity: 0.8;
+  border-radius: 2px;
+
+  /* nhanh hơn + đi thẳng hơn */
+  animation: shoot 1.2s linear infinite;
+}
+
+/* Animation mới */
+@keyframes shoot {
+  0% {
+    transform: translateX(0) translateY(0) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(140vw) translateY(10vh) rotate(5deg);
+    opacity: 0;
+  }
 }
