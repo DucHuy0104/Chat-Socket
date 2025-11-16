@@ -183,11 +183,6 @@ button:active {
   animation: twinkle 2s infinite ease-in-out alternate;
 }
 
-/* Tạo 200 sao */
-body .stars .star {
-  animation-duration: calc(1.5s + (random(200) * 0.05s));
-}
-
 /* Lấp lánh */
 @keyframes twinkle {
   0% { opacity: 0.2; transform: scale(1); }
@@ -197,10 +192,10 @@ body .stars .star {
 /* --- SAO BĂN RƠI (shooting star) --- */
 .shooting-star {
   position: absolute;
-  width: 140px;
-  height: 2px;
+  width: 50px;
+  height: 1.1px;
   background: linear-gradient(90deg, white, transparent);
-  opacity: 0.8;
+  opacity: 0;
   border-radius: 2px;
 
   /* nhanh hơn + đi thẳng hơn */
@@ -210,11 +205,11 @@ body .stars .star {
 /* Animation mới */
 @keyframes shoot {
   0% {
-    transform: translateX(0) translateY(0) rotate(5deg);
+    transform: translateX(0) translateY(0) rotate(25deg);
     opacity: 1;
   }
   100% {
-    transform: translateX(140vw) translateY(10vh) rotate(5deg);
+    transform: translateX(100vw) translateY(90vh) rotate(25deg);
     opacity: 0;
   }
 }
