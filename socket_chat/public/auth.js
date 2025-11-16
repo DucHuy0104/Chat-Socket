@@ -112,3 +112,56 @@ function loadUserToNavbar() {
 
 // Tự động load navbar khi mở trang
 window.addEventListener('DOMContentLoaded', loadUserToNavbar);
+
+// Tạo sao nền tự động
+function generateStars(amount = 200) {
+    const container = document.querySelector(".stars");
+    if (!container) return;
+
+    for (let i = 0; i < amount; i++) {
+        const s = document.createElement("div");
+        s.className = "star";
+
+        // vị trí random trên màn hình
+        s.style.left = Math.random() * 100 + "vw";
+        s.style.top = Math.random() * 100 + "vh";
+
+        // độ sáng random (tự nhiên hơn)
+        s.style.opacity = 0.3 + Math.random() * 0.7;
+
+        // kích thước sao random
+        const size = Math.random() * 2 + 1; 
+        s.style.width = size + "px";
+        s.style.height = size + "px";
+
+        // tốc độ lấp lánh random
+        s.style.animationDuration = (1 + Math.random() * 2) + "s";
+
+        container.appendChild(s);
+    }
+}
+
+// Tạo sao bắn rơi
+function generateShootingStars(amount = 20) {
+    const wrap = document.querySelector(".shooting-wrap");
+    if (!wrap) return;
+
+    for (let i = 0; i < amount; i++) {
+        const st = document.createElement("div");
+        st.className = "shooting-star";
+
+        // vị trí ngẫu nhiên theo trục dọc
+        st.style.top = Math.random() * 60 + "%";
+
+        // delay random cho mỗi vệt sao
+        st.style.animationDelay = (Math.random() * 5).toFixed(2) + "s";
+
+        wrap.appendChild(st);
+    }
+}
+
+// Khi trang load, tạo luôn sao
+document.addEventListener("DOMContentLoaded", () => {
+    generateStars(250);          // nhiều sao hơn
+    generateShootingStars(30);   // 30 sao bắn rơi
+});
