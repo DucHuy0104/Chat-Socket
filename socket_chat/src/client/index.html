@@ -1,0 +1,160 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Chat Upload + Call Demo</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body { font-family: Arial; padding: 12px }
+    #messages { border:1px solid #ccc; height:200px; overflow:auto; padding:8px }
+    .tab { margin-bottom:8px }
+    .img-thumb { max-width:160px; border-radius:4px }
+    video { width:300px; height:225px; background:#000 }
+  </style>
+</head>
+<body>
+  <h2>Chat Demo - Upload & Call</h2>
+
+  Tên: <input id="username" placeholder="Tên bạn" />
+  <button id="joinBtn">Join Room</button>
+  <div class="tab">
+    <button id="tabChat">Chat</button>
+    <button id="tabUpload">Upload</button>
+    <button id="tabCall">Call</button>
+  </div>
+
+  <div id="panelChat">
+    <div id="messages"></div>
+    Message: <input id="msgInput" placeholder="(demo không gửi text)" />
+  </div>
+
+  <div id="panelUpload" style="display:none">
+    <input type="file" id="fileInput" />
+    <button id="uploadBtn">Upload</button>
+  </div>
+
+  <div id="panelCall" style="display:none">
+    <p>Remote socket id: <input id="callTo" style="width:260px" /> <button id="callBtn">Call</button></p>
+    <p><button id="hangupBtn">Hang up</button></p>
+    <video id="localVideo" autoplay muted playsinline></video>
+    <video id="remoteVideo" autoplay playsinline></video>
+    <p>Your socket id: <span id="myId">-</span></p>
+  </div>
+
+  <script>
+    const socket = io();
+    const room = 'room1';
+    let username = '';
+
+    const messagesDiv = document.getElementById('messages');
+    const myIdSpan = document.getElementById('myId');
+
+    function addMsg(html){
+      const d = document.createElement('div');
+      d.innerHTML = html;
+      messagesDiv.appendChild(d);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    document.getElementById('joinBtn').addEventListener('click', () => {
+      username = document.getElementById('username').value || 'User';
+      socket.emit('joinRoom', room, username);
+      addMsg(`<i>Vào phòng ${room} với tên ${username}</i>`);
+    });
+
+    socket.on('connect', () => { myIdSpan.innerText = socket.id });
+
+    socket.on('userStatus', msg => addMsg(`<b>${msg}</b>`));
+
+    socket.on('fileMessage', data => {
+      const url = data.url;
+      const orig = data.original.toLowerCase();
+      if (orig.match(/\.(png|jpg|jpeg|gif|webp)$/)){
+        addMsg(`<b>${data.username} gửi ảnh:</b><br><a href='${url}' target='_blank'><img class='img-thumb' src='${url}' /></a>`);
+      } else {
+        addMsg(`<b>${data.username} gửi file:</b> <a href='${url}' target='_blank'>${data.original}</a>`);
+      }
+    });
+
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return alert('Chọn file trước');
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('room', room);
+      fd.append('username', username);
+      const res = await fetch('/upload-file', { method:'POST', body: fd });
+      const j = await res.json();
+      if (j.ok) addMsg('<i>Upload thành công</i>');
+    });
+
+    // WebRTC
+    let pc = null;
+    let localStream = null;
+    const servers = { iceServers: [{ urls:'stun:stun.l.google.com:19302' }] };
+    let callTarget = null;
+
+    async function startLocalStream(){
+      if (!localStream){
+        localStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+        document.getElementById('localVideo').srcObject = localStream;
+      }
+    }
+
+    function createPeerConnection(){
+      pc = new RTCPeerConnection(servers);
+      pc.onicecandidate = e => { if (e.candidate) socket.emit('ice-candidate', { to:callTarget, candidate:e.candidate }); };
+      pc.ontrack = e => { document.getElementById('remoteVideo').srcObject = e.streams[0]; };
+      localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+    }
+
+    document.getElementById('callBtn').addEventListener('click', async ()=>{
+      callTarget = document.getElementById('callTo').value.trim();
+      if (!callTarget) return alert("Nhập socket id cần gọi");
+
+      await startLocalStream();
+      createPeerConnection();
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+
+      socket.emit('offer', { to:callTarget, sdp:offer });
+    });
+
+    document.getElementById('hangupBtn').addEventListener('click', ()=>{
+      if (pc) pc.close(), pc=null;
+      document.getElementById('remoteVideo').srcObject=null;
+    });
+
+    socket.on('offer', async ({ from, sdp })=>{
+      callTarget = from;
+      await startLocalStream();
+      createPeerConnection();
+      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      socket.emit('answer', { to:from, sdp:answer });
+    });
+
+    socket.on('answer', async ({ sdp })=>{
+      await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+    });
+
+    socket.on('ice-candidate', async ({ candidate })=>{
+      if (candidate) await pc.addIceCandidate(candidate);
+    });
+
+    // Tabs
+    document.getElementById('tabChat').onclick = ()=>show('panelChat');
+    document.getElementById('tabUpload').onclick = ()=>show('panelUpload');
+    document.getElementById('tabCall').onclick = ()=>show('panelCall');
+
+    function show(id){
+      document.getElementById('panelChat').style.display='none';
+      document.getElementById('panelUpload').style.display='none';
+      document.getElementById('panelCall').style.display='none';
+      document.getElementById(id).style.display='block';
+    }
+  </script>
+</body>
+</html>
