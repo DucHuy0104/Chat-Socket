@@ -58,8 +58,7 @@ function saveUser(email, name, pass, avatar) {
   users[email] = { name, pass, avatar };
   localStorage.setItem("users", JSON.stringify(users));
 
-  alert("Đăng ký thành công!");
-  window.location.href = "login.html";
+  showSuccess("Đăng ký thành công!", "login.html");
 }
 
 // ─── LOGIN ─────────────────────────────────────────────────
@@ -90,10 +89,10 @@ function login() {
   // lưu user đang login
   localStorage.setItem("currentUser", JSON.stringify(users[email]));
 
-  window.location.href = "index.html"; // chuyển sang giao diện chat
+  showSuccess("Đăng nhập thành công!", "index.html");
 }
 
-// ─── HIỆN AVATAR TRÊN NAVBAR ───────────────────────────────
+// avatar trên navbar
 function loadUserToNavbar() {
   const u = JSON.parse(localStorage.getItem("currentUser"));
   const nav = document.getElementById("navUser");
@@ -168,3 +167,17 @@ document.addEventListener("DOMContentLoaded", () => {
     generateStars(1000);          // nhiều sao hơn
     generateShootingStars(150); // 150 sao bắn rơi
 });
+
+// notice success
+function showSuccess(msg, redirectUrl) {
+    const box = document.getElementById("successBox");
+    if (!box) return;
+
+    box.textContent = msg;
+    box.style.display = "block"; // Box hiển thị
+
+    setTimeout(() => {
+        box.style.display = "none";
+        window.location.href = redirectUrl; // Chuyển hướng
+    }, 1500); // Thời gian chờ 1500ms (1.5 giây)
+}
