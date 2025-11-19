@@ -213,3 +213,15 @@ button:active {
     opacity: 0;
   }
 }
+
+/* thông báo thành công */
+.success {
+    margin-top: 10px;
+    padding: 10px;
+    color: #155724; /* Màu chữ xanh đậm */
+    background: #d4edda; /* Màu nền xanh nhạt */
+    border: 1px solid #c3e6cb;
+    border-radius: 6px;
+    display: none; /* Mặc định ẩn, JS sẽ bật khi cần */
+    font-weight: bold;
+}
