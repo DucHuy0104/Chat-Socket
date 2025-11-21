@@ -1,144 +1,180 @@
-* { box-sizing: border-box }
-body { margin: 0; font-family: system-ui, Arial, Helvetica, sans-serif; background: #f4f6fb; color: #222; }
-.container { max-width: 1100px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-header { display:flex; align-items:center; justify-content:space-between; padding: 12px 16px; background:#283593; color:#fff; }
-main { display:grid; grid-template-columns: 280px 1fr; gap:16px; padding: 16px; }
-aside { background:#fff; border:1px solid #e1e1e1; border-radius:12px; padding:12px; box-shadow: 0 4px 14px rgba(0,0,0,.04)}
-aside h3 { margin:10px 0 }
-.rooms .room { padding:6px 10px; border-radius:8px; background:#e8eaf6; margin-bottom:6px; cursor:pointer; }
-.rooms .room.active { background:#c5cae9; font-weight:700 }
-.room-create { display:flex; gap:6px; margin-top:10px }
-.room-create input { flex:1; padding:8px 10px; border:1px solid #ddd; border-radius:10px }
-.room-create button { padding:8px 10px; border:none; border-radius:10px; background:#1e88e5; color:#fff; cursor:pointer }
-.chat { background:#fff; border:1px solid #e1e1e1; border-radius:12px; display:flex; flex-direction:column; height: calc(100vh - 140px); box-shadow: 0 4px 14px rgba(0,0,0,.04) }
-.chat-header { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid #eee }
-#messages { list-style: none; padding: 10px 14px; margin: 0; overflow-y:auto; flex:1 }
-#messages li { margin: 6px 0; padding: 6px 8px; border-radius: 8px; background:#f5f5f5 }
-#messages li.me { background:#e3f2fd }
-#messages li.system { background:#ede7f6; color:#4a148c; font-style:italic }
-#form { display:flex; gap:8px; padding: 10px 14px; border-top:1px solid #eee }
-#input { flex:1; padding:8px 10px; border:1px solid #ddd; border-radius:10px }
-#form button { padding:8px 10px; border:none; border-radius:10px; background:#1e88e5; color:#fff; cursor:pointer }
-#usersOnline { list-style:none; padding:0; margin:0 }
-#usersOnline li { padding:6px 8px; border-radius:8px; background:#f5f5f5; margin-bottom:6px; cursor:pointer }
-#usersOnline li:hover { background:#e0e0e0 }
-#toGeneral { background:#8e24aa; color:#fff; border:none; padding:8px 10px; border-radius:8px; cursor:pointer }
-
-/* ➕ THÊM MỚI: hiển thị "đang gõ..." dưới khung chat */
-#typingStatus {
-  padding: 2px 14px 6px;
-  font-size: 13px;
-  font-style: italic;
-  color: #777;
-  min-height: 18px; /* để khung không bị giật khi ẩn/hiện */
+/* --- 1. CẤU HÌNH CHUNG --- */
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --sidebar-width: 280px;
+  --bg-color: #f0f2f5;
+  --text-dark: #333;
+  --border-color: #e6e6e6;
+  --radius: 12px;
+  --msg-me-bg: #667eea;
+  --msg-other-bg: #ffffff;
 }
 
-/* ➕ THÊM MỚI: chữ "Đã đọc" dưới tin nhắn của bạn */
-.read-flag {
-  font-size: 12px;
-  color: #1e88e5;
-  margin-top: 2px;
-  text-align: right;
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+body { height: 100vh; background: var(--bg-color); overflow: hidden; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+/* ============================================================
+   2. CSS CHO TRANG LOGIN (ĐỂ HỖ TRỢ FILE login.html CỦA BẠN)
+   ============================================================ */
+.login-container {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--primary-gradient);
+  display: flex; justify-content: center; align-items: center; z-index: 9999;
 }
-    /* LOGIN OVERLAY */
+.login-box {
+  background: #ffffff; padding: 3rem 2.5rem; border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  text-align: center; width: 100%; max-width: 400px;
+  animation: fadeUp 0.6s ease-out;
+}
+.login-box h2 { margin-bottom: 2rem; color: #333; font-weight: 600; }
+.input-group { position: relative; margin-bottom: 1.5rem; }
+.input-group input {
+  width: 100%; padding: 15px 15px 15px 50px;
+  border: 2px solid #eee; border-radius: 12px; outline: none;
+  font-size: 1rem; transition: all 0.3s ease; background: #f9f9f9;
+}
+.input-group input:focus { border-color: #667eea; background: #fff; }
+.input-icon {
+  position: absolute; top: 50%; left: 15px; transform: translateY(-50%);
+  color: #aaa; font-size: 1.2rem; transition: color 0.3s;
+}
+.input-group input:focus + .input-icon { color: #667eea; }
+#btnJoin {
+  width: 100%; padding: 15px; background: var(--primary-gradient);
+  color: white; border: none; border-radius: 12px; cursor: pointer;
+  font-weight: 600; font-size: 1.1rem; transition: 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+#btnJoin:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
+.login-footer { margin-top: 1.5rem; font-size: 0.85rem; color: #888; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    .login-overlay {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(12px);
-      z-index: 50;
-    }
+/* ============================================================
+   3. CSS CHO TRANG CHAT (INDEX.HTML)
+   ============================================================ */
+.app-container { display: flex; height: 100vh; width: 100%; background: #fff; }
 
-    .login-overlay.hidden {
-      display: none;
-    }
+/* --- SIDEBAR (CỘT TRÁI) --- */
+.sidebar {
+  width: var(--sidebar-width); background: #fff; border-right: 1px solid var(--border-color);
+  display: flex; flex-direction: column; z-index: 2;
+}
+.sidebar-header { padding: 20px; display: flex; align-items: center; gap: 10px; color: #764ba2; }
+.sidebar-header h2 { font-size: 1.2rem; font-weight: 700; }
+.logo-icon { font-size: 1.8rem; }
 
-    .login-card {
-      width: 340px;
-      max-width: 90vw;
-      background: var(--card-bg);
-      border-radius: 20px;
-      padding: 22px 20px 18px;
-      box-shadow: 0 22px 55px rgba(15, 23, 42, 0.7);
-      border: 1px solid var(--border-soft);
-      text-align: left;
-    }
+.user-profile {
+  margin: 0 15px 15px; padding: 12px; background: #f8f9fa;
+  border: 1px solid #eee; border-radius: var(--radius);
+  display: flex; align-items: center; gap: 10px;
+}
+.avatar-circle {
+  width: 35px; height: 35px; background: #e0e0e0; border-radius: 50%;
+  display: flex; justify-content: center; align-items: center; color: #555;
+}
+.user-name { flex: 1; font-weight: 600; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+#btnLogout { border: none; background: none; color: #ff4757; cursor: pointer; font-size: 1.2rem; transition: transform 0.2s;}
+#btnLogout:hover { transform: scale(1.1); }
 
-    .login-title {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 6px;
-      color: var(--text-main);
-    }
+.sidebar-content { flex: 1; overflow-y: auto; padding: 0 15px; }
+.sidebar-content h3 { font-size: 0.75rem; color: #999; text-transform: uppercase; margin: 20px 0 10px; }
 
-    .login-sub {
-      font-size: 13px;
-      color: var(--text-sub);
-      margin-bottom: 14px;
-    }
+/* Phòng Chat */
+.rooms-list .room {
+  padding: 10px; margin-bottom: 5px; border-radius: 8px; cursor: pointer;
+  color: var(--text-dark); font-size: 0.9rem; transition: 0.2s; display: flex; align-items: center; gap: 8px;
+}
+.rooms-list .room:hover { background: #f5f5f5; }
+.rooms-list .room.active { background: var(--primary-gradient); color: white; font-weight: 500; }
 
-    .login-field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 14px;
-    }
+/* Tạo phòng & Online */
+.room-create-box { display: flex; gap: 5px; margin-top: 10px; }
+.room-create-box input { flex: 1; padding: 8px; border: 1px solid #eee; border-radius: 8px; outline: none; background: #f9f9f9; }
+.room-create-box button { padding: 0 10px; border: none; background: #eee; border-radius: 8px; cursor: pointer; }
+.room-create-box button:hover { background: #667eea; color: white; }
 
-    .login-field label {
-      font-size: 13px;
-      color: var(--text-sub);
-    }
+.users-list li { padding: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; }
+.users-list li:hover { color: #667eea; background: #f9f9f9; border-radius: 8px;}
+.users-list li::before { content: ''; width: 8px; height: 8px; background: #2ccf6d; border-radius: 50%; }
 
-    .login-field input {
-      padding: 8px 10px;
-      border-radius: 12px;
-      border: 1px solid var(--border-soft);
-      outline: none;
-      font-size: 13px;
-      background: var(--card-bg-alt);
-      color: var(--text-main);
-      transition: border 0.15s, box-shadow 0.15s;
-    }
+/* --- MAIN CHAT AREA (CỘT PHẢI) --- */
+.chat-area { flex: 1; display: flex; flex-direction: column; background: #f2f4f7; }
 
-    .login-field input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.35);
-    }
+.chat-header {
+  padding: 15px 25px; background: #fff; border-bottom: 1px solid var(--border-color);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.chat-info { display: flex; align-items: center; gap: 15px; }
+.chat-icon {
+  width: 42px; height: 42px; background: var(--primary-gradient);
+  border-radius: 12px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.4rem;
+}
+.chat-info h2 { margin: 0; font-size: 1.1rem; }
+.status-text { font-size: 0.8rem; color: #2ccf6d; display: flex; align-items: center; }
+.status-dot { width: 8px; height: 8px; background: #2ccf6d; border-radius: 50%; margin-right: 5px; }
 
-    .login-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 4px;
-    }
+.btn-secondary {
+  padding: 8px 16px; border: 1px solid #ddd; background: white; border-radius: 8px;
+  cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s; font-size: 0.9rem;
+}
+.btn-secondary:hover { background: #f5f5f5; }
 
-    .login-btn {
-      padding: 8px 14px;
-      border-radius: 999px;
-      border: none;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: linear-gradient(135deg, #3b82f6, #6366f1);
-      color: #f9fafb;
-      box-shadow: 0 12px 28px rgba(37, 99, 235, 0.65);
-      transition: transform 0.1s, box-shadow 0.1s, filter 0.1s;
-    }
+/* Danh sách tin nhắn */
+.messages-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+#messages li {
+  list-style: none; max-width: 65%; padding: 12px 16px;
+  border-radius: 18px; font-size: 0.95rem; line-height: 1.5; position: relative;
+  word-wrap: break-word; animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    .login-btn:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
-      box-shadow: 0 16px 32px rgba(37, 99, 235, 0.8);
-    }
+/* Tin người khác */
+#messages li:not(.me):not(.system) {
+  align-self: flex-start; background: var(--msg-other-bg); color: var(--text-dark);
+  border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+#messages li strong { display: block; font-size: 0.75rem; color: #888; margin-bottom: 4px; }
 
-    .login-btn:active {
-      transform: translateY(1px) scale(0.98);
-      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.55);
-    }
+/* Tin của mình */
+#messages li.me {
+  align-self: flex-end; background: var(--primary-gradient); color: white;
+  border-bottom-right-radius: 4px; box-shadow: 0 3px 10px rgba(102, 126, 234, 0.25);
+}
+#messages li.me strong { display: none; }
+#messages li.me small { color: rgba(255,255,255,0.75) !important; }
+#messages li.me a { color: #fff !important; text-decoration: underline; }
+
+/* Tin hệ thống */
+#messages li.system { align-self: center; background: transparent; color: #999; font-style: italic; font-size: 0.85rem; margin: 10px 0; }
+.read-flag { position: absolute; bottom: -18px; right: 0; font-size: 0.7rem; color: #aaa; }
+
+/* Hiển thị ảnh và file */
+.msg-image {
+  max-width: 100%; max-height: 300px; border-radius: 12px;
+  object-fit: cover; display: block; margin-top: 5px; cursor: pointer;
+}
+.msg-image:hover { transform: scale(1.02); transition: transform 0.2s;}
+.msg-file {
+  display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.05);
+  padding: 8px; border-radius: 8px; margin-top: 5px; font-size: 0.9rem;
+}
+.me .msg-file { background: rgba(255,255,255,0.2); color: white; }
+.me .msg-file a { color: white; }
+
+/* Form nhập liệu */
+.chat-input-area { background: #fff; padding: 15px 25px; border-top: 1px solid var(--border-color); }
+#typingStatus { height: 20px; font-size: 0.8rem; color: #888; font-style: italic; margin-bottom: 5px; margin-left: 15px;}
+
+.input-form { display: flex; align-items: center; gap: 10px; background: #f0f2f5; padding: 8px; border-radius: 30px; }
+.input-form input { flex: 1; border: none; background: transparent; outline: none; padding: 10px; font-size: 1rem; }
+.btn-icon { width: 40px; height: 40px; border-radius: 50%; border: none; background: transparent; cursor: pointer; font-size: 1.3rem; color: #666; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+.btn-icon:hover { background: rgba(0,0,0,0.05); color: #333; }
+.btn-send { width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--primary-gradient); color: white; cursor: pointer; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4); transition: 0.2s; }
+.btn-send:hover { transform: scale(1.05); }
