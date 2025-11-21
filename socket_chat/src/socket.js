@@ -193,8 +193,9 @@ export function createSocket(io) {
     });
 
     // ❌ Disconnect
-    socket.on('disconnect', async () => {
+    socket.on('disconnect', async (reason) => {
       const username = socketToUser.get(socket.id);
+      console.log('❌ Client disconnected', socket.id, 'reason:', reason, 'user:', username);
 
       // Lấy tất cả phòng mà socket đang ở (trừ phòng riêng của socket)
       const rooms = Array.from(socket.rooms).filter((r) => r !== socket.id);
@@ -228,6 +229,24 @@ export function createSocket(io) {
 
     socket.on('get_users_online', (ack) => {
       ack && ack({ users: Array.from(onlineUsers.keys()) });
+    });
+
+    // 📤 File message handler (tuỳ chọn - nếu muốn xử lý thêm logic)
+    socket.on('file_message', async ({ room, filename, url, size }, ack) => {
+      const username = socketToUser.get(socket.id);
+      if (!username || !room) return ack && ack({ ok: false });
+
+      // Tuỳ chọn: Lưu file message vào DB
+      const msg = await Message.create({
+        content: `📎 ${filename}`,
+        sender: username,
+        room,
+        isPrivate: false,
+        metadata: { url, size, type: 'file' }
+      });
+
+      io.to(room).emit('file_message', msg);
+      ack && ack({ ok: true });
     });
   });
 }

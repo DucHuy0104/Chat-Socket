@@ -6,14 +6,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-   <!-- Socket.IO + client.js -->
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/client.js"></script>
+  <!-- Socket.IO + client.js (moved to end of body so DOM elements exist) -->
 
   <!-- Script chuyển Dark / Light mode -->
-    <!-- Socket.IO + client.js -->
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/client.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -753,12 +748,15 @@
           <!-- form gửi tin nhắn -->
           <form id="form">
             <button type="button" class="btn-icon" title="Emoji">😊</button>
-            <button type="button" class="btn-icon" title="Đính kèm file">📎</button>
+            <button type="button" class="btn-icon" id="fileUploadBtn" title="Đính kèm file">📎</button>
             <input id="input" type="text" autocomplete="off" placeholder="Nhập tin nhắn..." />
             <button type="submit">
               <span>Gửi</span>
             </button>
           </form>
+          
+          <!-- Hidden file input -->
+          <input id="fileInput" type="file" style="display: none;" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip" />
         </div>
       </section>
     </div>
@@ -791,5 +789,8 @@
       });
     })();
   </script>
+  <!-- Socket.IO + client.js -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/client.js"></script>
 </body>
 </html>

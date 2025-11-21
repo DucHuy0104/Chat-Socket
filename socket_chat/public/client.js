@@ -1,4 +1,8 @@
 const socket = io();
+// Debugging connection lifecycle
+socket.on('connect', () => console.log('socket connected', socket.id));
+socket.on('disconnect', (reason) => console.log('socket disconnected', reason));
+socket.on('connect_error', (err) => console.error('connect_error', err && err.message));
 let username = '';
 let currentRoom = 'general';
 let dmTarget = '';
@@ -241,3 +245,48 @@ socket.on('system', (text) => {
 socket.on('users_online', (list) => {
   refreshUsers(list || []);
 });
+
+// 📤 nhận file message từ server
+socket.on('fileMessage', ({ username: sender, url, original, size, timestamp }) => {
+  const sizeMB = (size / (1024 * 1024)).toFixed(2);
+  const li = document.createElement('li');
+  li.innerHTML = `<strong>${sender}</strong>: 📎 <a href="${url}" target="_blank" style="color: var(--primary);">${original}</a> (${sizeMB}MB) <small>(${new Date(timestamp).toLocaleTimeString()})</small>`;
+  messages.appendChild(li);
+  messages.scrollTop = messages.scrollHeight;
+});
+
+// 📤 upload file handler (nút & input nằm trong index.html)
+const fileInput = document.getElementById('fileInput');
+const fileUploadBtn = document.getElementById('fileUploadBtn');
+
+if (fileUploadBtn) {
+  fileUploadBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    fileInput && fileInput.click();
+  });
+}
+
+if (fileInput) {
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('room', currentRoom);
+    formData.append('username', username);
+
+    try {
+      const res = await fetch('/upload-file', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!data.ok) return alert('Upload thất bại: ' + (data.message || ''));
+      fileInput.value = '';
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Lỗi upload file: ' + (err.message || err));
+    }
+  });
+}
