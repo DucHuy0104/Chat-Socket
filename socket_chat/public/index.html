@@ -40,6 +40,30 @@
         <button id="btnLogout" title="Đăng xuất"><i class='bx bx-log-out'></i></button>
       </div>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+  const firebaseConfig = {  
+    apiKey: "AIzaSyDRMgkgMUxdDn0LLduG0_kZ4AdvmM3ZVg4",
+    authDomain: "login-43c99.firebaseapp.com",
+    projectId: "login-43c99",
+    storageBucket: "login-43c99.firebasestorage.app",
+    messagingSenderId: "559138671436",
+    appId: "1:559138671436:web:32388b3a289887bd641de9",
+    measurementId: "G-KFY7VSR74L"
+    };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const btnLogout = document.getElementById('btnLogout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      signOut(auth).catch(console.error);
+    });
+  }
+</script>
+
+
             <!-- Menu chỉnh avatar -->
       <div id="avatarMenu" class="avatar-menu">
         <button id="avatarMenuChoose">Chọn ảnh avatar</button>
