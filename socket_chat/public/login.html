@@ -12,7 +12,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Poppins', sans-serif; /* Sử dụng font mới */
+      font-family: 'Poppins', sans-serif;
     }
 
     body {
@@ -20,7 +20,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      /* 2. Nền Gradient hiện đại */
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       background-size: cover;
     }
@@ -36,17 +35,14 @@
     .login-box {
       background: #ffffff;
       padding: 3rem 2.5rem;
-      border-radius: 20px; /* Bo góc mạnh hơn */
-      /* 3. Bóng đổ mềm mại, có chiều sâu */
+      border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
       text-align: center;
       width: 100%;
       max-width: 400px;
-      /* Hiệu ứng xuất hiện nhẹ nhàng */
       animation: fadeUp 0.6s ease-out;
     }
 
-    /* Tiêu đề */
     .login-box h2 {
       margin-bottom: 2rem;
       color: #333;
@@ -55,7 +51,6 @@
     }
 
     /* --- Ô NHẬP LIỆU --- */
-    /* Tạo một wrapper để chứa icon và input */
     .input-group {
       position: relative;
       margin-bottom: 1.5rem;
@@ -63,7 +58,7 @@
 
     .input-group input {
       width: 100%;
-      padding: 15px 15px 15px 50px; /* Padding trái lớn để chừa chỗ cho icon */
+      padding: 15px 15px 15px 50px;
       border: 2px solid #eee;
       border-radius: 12px;
       outline: none;
@@ -72,14 +67,12 @@
       background: #f9f9f9;
     }
 
-    /* 4. Hiệu ứng khi focus vào ô input */
     .input-group input:focus {
       border-color: #667eea;
       background: #fff;
       box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     }
 
-    /* Icon người dùng (Dùng SVG inline cho nhẹ) */
     .input-icon {
       position: absolute;
       top: 50%;
@@ -89,7 +82,6 @@
       transition: color 0.3s ease;
     }
 
-    /* Khi input focus thì icon cũng đổi màu */
     .input-group input:focus + .input-icon {
       color: #667eea;
     }
@@ -98,7 +90,6 @@
     #btnJoin {
       width: 100%;
       padding: 15px;
-      /* Nền gradient cho nút */
       background: linear-gradient(to right, #667eea, #764ba2);
       color: white;
       border: none;
@@ -110,15 +101,15 @@
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
 
-    /* 5. Hiệu ứng hover nút bấm */
     #btnJoin:hover {
-      transform: translateY(-3px); /* Nút nổi lên nhẹ */
+      transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
     }
     
     #btnJoin:active {
       transform: translateY(-1px);
     }
+
     /* --- CHỌN AVATAR KHI ĐĂNG NHẬP --- */
     .avatar-select {
       margin-bottom: 1.5rem;
@@ -165,14 +156,12 @@
       border-color: #667eea;
     }
 
-    /* Footer nhỏ bên dưới */
     .login-footer {
       margin-top: 1.5rem;
       font-size: 0.85rem;
       color: #888;
     }
 
-    /* Keyframe cho hiệu ứng xuất hiện */
     @keyframes fadeUp {
       from {
         opacity: 0;
@@ -188,7 +177,9 @@
 <body>
   <div class="login-container">
     <div class="login-box">
-          <div class="avatar-select">
+
+      <!-- CHỌN AVATAR -->
+      <div class="avatar-select">
         <div id="avatarPreview" class="avatar-preview">+</div>
         <div class="avatar-actions">
           <button type="button" id="btnChooseAvatar">Chọn avatar (tuỳ chọn)</button>
@@ -212,162 +203,85 @@
     </div>
   </div>
 
+  <!-- CHỈ 1 SCRIPT DUY NHẤT -->
   <script>
-    const btn = document.getElementById('btnJoin');
-    const input = document.getElementById('loginName');
+    // Lấy các phần tử
+    const btnJoin = document.getElementById('btnJoin');
+    const inputName = document.getElementById('loginName');
 
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const btnChooseAvatar = document.getElementById('btnChooseAvatar');
+    const btnClearAvatar = document.getElementById('btnClearAvatar');
+
+    let selectedAvatarDataUrl = null;
+
+    // Xử lý đăng nhập
     function handleLogin() {
-      const name = input.value.trim();
-      // Thêm chút hiệu ứng rung lắc nếu quên nhập tên (tùy chọn)
+      const name = inputName.value.trim();
+
       if (!name) {
-        input.style.borderColor = '#ff4757';
-        input.focus();
-        setTimeout(() => input.style.borderColor = '#eee', 1000); // Reset màu sau 1s
-        // alert("Vui lòng nhập tên!"); // Bỏ alert cho đỡ phiền
+        inputName.style.borderColor = '#ff4757';
+        inputName.focus();
+        setTimeout(() => {
+          inputName.style.borderColor = '#eee';
+        }, 1000);
         return;
       }
 
-      // 1. Lưu tên vào bộ nhớ trình duyệt
+      // Lưu tên
       localStorage.setItem('chat_username', name);
 
-      // 2. Chuyển hướng sang trang chat (index.html)
-      // Thêm hiệu ứng nhỏ trước khi chuyển trang
-      btn.innerHTML = 'Đang kết nối...';
-      btn.style.opacity = '0.8';
-      setTimeout(() => {
-          window.location.href = '/';
-      }, 300); // Delay nhẹ 0.3s để thấy hiệu ứng nút
-    }
-
-    btn.onclick = handleLogin;
-    
-    input.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') handleLogin();
-    });
-    
-    // Reset màu border khi người dùng bắt đầu gõ lại sau khi bị lỗi
-    input.addEventListener('input', () => {
-        input.style.borderColor = '#eee';
-    });
-  </script>
-    <script>
-    const btn = document.getElementById('btnJoin');
-    const input = document.getElementById('loginName');
-
-    function handleLogin() {
-      const name = input.value.trim();
-      // Thêm chút hiệu ứng rung lắc nếu quên nhập tên (tùy chọn)
-      if (!name) {
-        input.style.borderColor = '#ff4757';
-        input.focus();
-        setTimeout(() => input.style.borderColor = '#eee', 1000);
-        return;
-      }
-
-      // 1. Lưu tên vào bộ nhớ trình duyệt
-      localStorage.setItem('chat_username', name);
-
-      // 2. Lưu avatar (nếu có)
-      if (window.__selectedAvatarDataUrl) {
-        localStorage.setItem('chat_avatar', window.__selectedAvatarDataUrl);
+      // Lưu avatar (nếu có)
+      if (selectedAvatarDataUrl) {
+        localStorage.setItem('chat_avatar', selectedAvatarDataUrl);
       } else {
         localStorage.removeItem('chat_avatar');
       }
 
-      // 3. Chuyển hướng
-      btn.innerHTML = 'Đang kết nối...';
-      btn.style.opacity = '0.8';
+      // Chuyển trang
+      btnJoin.innerHTML = 'Đang kết nối...';
+      btnJoin.style.opacity = '0.8';
       setTimeout(() => {
         window.location.href = '/';
       }, 300);
     }
 
-    // Gán lại sự kiện (override cái cũ)
-    btn.onclick = handleLogin;
-    input.addEventListener('keypress', (e) => {
+    // Sự kiện login
+    btnJoin.addEventListener('click', handleLogin);
+    inputName.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') handleLogin();
     });
+    inputName.addEventListener('input', () => {
+      inputName.style.borderColor = '#eee';
+    });
 
-    <script>
-  // Lấy các phần tử
-  const btnJoin = document.getElementById('btnJoin');
-  const inputName = document.getElementById('loginName');
+    // ====== CHỌN AVATAR ======
+    btnChooseAvatar.addEventListener('click', () => {
+      avatarInput.click();
+    });
 
-  const avatarInput   = document.getElementById('avatarInput');
-  const avatarPreview = document.getElementById('avatarPreview');
-  const btnChooseAvatar = document.getElementById('btnChooseAvatar');
-  const btnClearAvatar  = document.getElementById('btnClearAvatar');
+    avatarInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
 
-  let selectedAvatarDataUrl = null;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        selectedAvatarDataUrl = ev.target.result;
+        avatarPreview.style.backgroundImage = `url(${ev.target.result})`;
+        avatarPreview.textContent = '';
+        avatarPreview.style.borderStyle = 'solid';
+      };
+      reader.readAsDataURL(file);
+    });
 
-  // Xử lý đăng nhập
-  function handleLogin() {
-    const name = inputName.value.trim();
-
-    if (!name) {
-      inputName.style.borderColor = '#ff4757';
-      inputName.focus();
-      setTimeout(() => (inputName.style.borderColor = '#eee'), 1000);
-      return;
-    }
-
-    // Lưu tên
-    localStorage.setItem('chat_username', name);
-
-    // Lưu avatar (nếu có)
-    if (selectedAvatarDataUrl) {
-      localStorage.setItem('chat_avatar', selectedAvatarDataUrl);
-    } else {
-      localStorage.removeItem('chat_avatar');
-    }
-
-    // Chuyển trang
-    btnJoin.innerHTML = 'Đang kết nối...';
-    btnJoin.style.opacity = '0.8';
-    setTimeout(() => {
-      window.location.href = '/';
-    }, 300);
-  }
-
-  // Sự kiện login
-  btnJoin.addEventListener('click', handleLogin);
-  inputName.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handleLogin();
-  });
-  inputName.addEventListener('input', () => {
-    inputName.style.borderColor = '#eee';
-  });
-
-  // ====== CHỌN AVATAR ======
-  // Bấm nút "Chọn avatar"
-  btnChooseAvatar.addEventListener('click', () => {
-    avatarInput.click();
-  });
-
-  // Khi chọn file ảnh
-  avatarInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      selectedAvatarDataUrl = ev.target.result;
-      avatarPreview.style.backgroundImage = `url(${ev.target.result})`;
-      avatarPreview.textContent = '';
-      avatarPreview.style.borderStyle = 'solid';
-    };
-    reader.readAsDataURL(file);
-  });
-
-  // Bấm "Bỏ avatar"
-  btnClearAvatar.addEventListener('click', () => {
-    selectedAvatarDataUrl = null;
-    avatarPreview.style.backgroundImage = 'none';
-    avatarPreview.textContent = '+';
-    avatarPreview.style.borderStyle = 'dashed';
-    avatarInput.value = '';
-  });
+    btnClearAvatar.addEventListener('click', () => {
+      selectedAvatarDataUrl = null;
+      avatarPreview.style.backgroundImage = 'none';
+      avatarPreview.textContent = '+';
+      avatarPreview.style.borderStyle = 'dashed';
+      avatarInput.value = '';
+    });
   </script>
-
 </body>
 </html>
