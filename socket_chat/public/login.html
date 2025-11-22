@@ -119,6 +119,51 @@
     #btnJoin:active {
       transform: translateY(-1px);
     }
+    /* --- CHỌN AVATAR KHI ĐĂNG NHẬP --- */
+    .avatar-select {
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .avatar-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #f1f1f1;
+      border: 2px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: #aaa;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .avatar-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .avatar-actions button {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background: #ffffff;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .avatar-actions button:hover {
+      background: #f3f3ff;
+      border-color: #667eea;
+    }
 
     /* Footer nhỏ bên dưới */
     .login-footer {
@@ -143,6 +188,15 @@
 <body>
   <div class="login-container">
     <div class="login-box">
+          <div class="avatar-select">
+        <div id="avatarPreview" class="avatar-preview">+</div>
+        <div class="avatar-actions">
+          <button type="button" id="btnChooseAvatar">Chọn avatar (tuỳ chọn)</button>
+          <button type="button" id="btnClearAvatar">Bỏ avatar</button>
+          <input type="file" id="avatarInput" accept="image/*" style="display:none">
+        </div>
+      </div>
+
       <h2>Tham gia Chat</h2>
       
       <div class="input-group">
@@ -196,5 +250,124 @@
         input.style.borderColor = '#eee';
     });
   </script>
+    <script>
+    const btn = document.getElementById('btnJoin');
+    const input = document.getElementById('loginName');
+
+    function handleLogin() {
+      const name = input.value.trim();
+      // Thêm chút hiệu ứng rung lắc nếu quên nhập tên (tùy chọn)
+      if (!name) {
+        input.style.borderColor = '#ff4757';
+        input.focus();
+        setTimeout(() => input.style.borderColor = '#eee', 1000);
+        return;
+      }
+
+      // 1. Lưu tên vào bộ nhớ trình duyệt
+      localStorage.setItem('chat_username', name);
+
+      // 2. Lưu avatar (nếu có)
+      if (window.__selectedAvatarDataUrl) {
+        localStorage.setItem('chat_avatar', window.__selectedAvatarDataUrl);
+      } else {
+        localStorage.removeItem('chat_avatar');
+      }
+
+      // 3. Chuyển hướng
+      btn.innerHTML = 'Đang kết nối...';
+      btn.style.opacity = '0.8';
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 300);
+    }
+
+    // Gán lại sự kiện (override cái cũ)
+    btn.onclick = handleLogin;
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleLogin();
+    });
+
+    <script>
+  // Lấy các phần tử
+  const btnJoin = document.getElementById('btnJoin');
+  const inputName = document.getElementById('loginName');
+
+  const avatarInput   = document.getElementById('avatarInput');
+  const avatarPreview = document.getElementById('avatarPreview');
+  const btnChooseAvatar = document.getElementById('btnChooseAvatar');
+  const btnClearAvatar  = document.getElementById('btnClearAvatar');
+
+  let selectedAvatarDataUrl = null;
+
+  // Xử lý đăng nhập
+  function handleLogin() {
+    const name = inputName.value.trim();
+
+    if (!name) {
+      inputName.style.borderColor = '#ff4757';
+      inputName.focus();
+      setTimeout(() => (inputName.style.borderColor = '#eee'), 1000);
+      return;
+    }
+
+    // Lưu tên
+    localStorage.setItem('chat_username', name);
+
+    // Lưu avatar (nếu có)
+    if (selectedAvatarDataUrl) {
+      localStorage.setItem('chat_avatar', selectedAvatarDataUrl);
+    } else {
+      localStorage.removeItem('chat_avatar');
+    }
+
+    // Chuyển trang
+    btnJoin.innerHTML = 'Đang kết nối...';
+    btnJoin.style.opacity = '0.8';
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 300);
+  }
+
+  // Sự kiện login
+  btnJoin.addEventListener('click', handleLogin);
+  inputName.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleLogin();
+  });
+  inputName.addEventListener('input', () => {
+    inputName.style.borderColor = '#eee';
+  });
+
+  // ====== CHỌN AVATAR ======
+  // Bấm nút "Chọn avatar"
+  btnChooseAvatar.addEventListener('click', () => {
+    avatarInput.click();
+  });
+
+  // Khi chọn file ảnh
+  avatarInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      selectedAvatarDataUrl = ev.target.result;
+      avatarPreview.style.backgroundImage = `url(${ev.target.result})`;
+      avatarPreview.textContent = '';
+      avatarPreview.style.borderStyle = 'solid';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Bấm "Bỏ avatar"
+  btnClearAvatar.addEventListener('click', () => {
+    selectedAvatarDataUrl = null;
+    avatarPreview.style.backgroundImage = 'none';
+    avatarPreview.textContent = '+';
+    avatarPreview.style.borderStyle = 'dashed';
+    avatarInput.value = '';
+  });
+  </script>
+
 </body>
 </html>

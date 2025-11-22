@@ -63,6 +63,10 @@ function appendMessage({ _id, content, sender, createdAt, isPrivate, system, rea
   const li = document.createElement('li');
   if (_id) li.dataset.id = _id;
   if (css) li.classList.add(css);
+  if (!system) {
+  li.setAttribute("data-sender-initial", sender.charAt(0).toUpperCase());
+}
+
 
   if (system) {
     li.classList.add('system');
@@ -275,4 +279,94 @@ if (fileInput) {
       fileInput.value = '';
     } catch (err) { alert('Lỗi upload: ' + err.message); }
   };
+}
+// Toggle Dark/Light Mode
+const toggleBtn = document.getElementById("toggleMode");
+
+if (toggleBtn) {
+  toggleBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    const theme = document.body.classList.contains("dark") ? "dark" : "light";
+    localStorage.setItem("theme", theme);
+
+    toggleBtn.innerHTML = theme === "dark" 
+      ? "<i class='bx bx-sun'></i>" 
+      : "<i class='bx bx-moon'></i>";
+  });
+
+  // Load saved theme
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark");
+    toggleBtn.innerHTML = "<i class='bx bx-sun'></i>";
+  }
+  // ==== AVATAR: HIỂN THỊ & CHỈNH SỬA TRONG PHÒNG CHAT ====
+
+// Lấy các phần tử liên quan
+const avatarCircle = document.querySelector('.avatar-circle');
+const avatarMenu = document.getElementById('avatarMenu');
+const avatarMenuChoose = document.getElementById('avatarMenuChoose');
+const avatarMenuClear = document.getElementById('avatarMenuClear');
+const avatarMenuInput = document.getElementById('avatarMenuInput');
+
+// Hàm áp dụng avatar vào vòng tròn trên sidebar
+function applyAvatar(avatarDataUrl) {
+  if (!avatarCircle) return;
+  if (avatarDataUrl) {
+    avatarCircle.style.backgroundImage = `url(${avatarDataUrl})`;
+    avatarCircle.style.backgroundSize = 'cover';
+    avatarCircle.style.backgroundPosition = 'center';
+    avatarCircle.innerHTML = ''; // tắt icon user mặc định
+  } else {
+    avatarCircle.style.backgroundImage = 'none';
+    avatarCircle.innerHTML = "<i class='bx bxs-user'></i>";
+  }
+}
+
+// Load avatar đã lưu (nếu có)
+const storedAvatar = localStorage.getItem('chat_avatar');
+applyAvatar(storedAvatar);
+
+// Click vào avatar để mở/đóng menu
+if (avatarCircle && avatarMenu) {
+  avatarCircle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    avatarMenu.style.display = avatarMenu.style.display === 'block' ? 'none' : 'block';
+  });
+
+  // Click ra ngoài thì đóng menu
+  document.addEventListener('click', (e) => {
+    if (!avatarMenu.contains(e.target) && !avatarCircle.contains(e.target)) {
+      avatarMenu.style.display = 'none';
+    }
+  });
+
+  // Chọn ảnh mới
+  avatarMenuChoose.addEventListener('click', () => {
+    avatarMenuInput.click();
+  });
+
+  avatarMenuInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target.result;
+      localStorage.setItem('chat_avatar', dataUrl);
+      applyAvatar(dataUrl);
+      avatarMenu.style.display = 'none';
+      avatarMenuInput.value = '';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Xóa avatar hiện tại
+  avatarMenuClear.addEventListener('click', () => {
+    localStorage.removeItem('chat_avatar');
+    applyAvatar(null);
+    avatarMenu.style.display = 'none';
+  });
+}
+
 }

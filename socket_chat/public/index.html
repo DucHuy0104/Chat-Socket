@@ -1,13 +1,57 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+<header class="chat-header">
+  <div class="chat-info">
+    <div class="chat-icon"><i class='bx bxs-chat'></i></div>
+    <div>
+      <h2 id="target">Room: general</h2>
+      <div class="status-text">
+        <span class="status-dot"></span> Đang hoạt động
+      </div>
+    </div>
+  </div>
+
+  <div class="call-actions">
+    <button id="btnCallVoice" class="btn-icon-circle" title="Gọi thoại">
+      <i class='bx bx-phone'></i>
+    </button>
+    <button id="btnCallVideo" class="btn-icon-circle" title="Gọi video">
+      <i class='bx bx-video'></i>
+    </button>
+    <button id="toGeneral" class="btn-secondary">
+      <i class='bx bx-home'></i> Sảnh chung
+    </button>
+  </div>
+</header>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Socket Chat Messenger</title>
+  <button id="toggleMode" class="btn-toggle-theme" title="Chế độ sáng/tối">
+  <i class='bx bx-moon'></i>
+  </button>
+  <title>Dark/Light Mode</title>
+  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
   <link rel="stylesheet" href="styles.css" />
 </head>
+  <div id="callOverlay" class="call-overlay">
+    <div class="call-box">
+      <div class="call-avatar" id="callAvatar"></div>
+      <div class="call-name" id="callName">Đang gọi...</div>
+      <div class="call-type" id="callType">Voice call</div>
+      <div class="call-actions-row">
+        <button id="btnEndCall" class="btn-end-call">
+          <i class='bx bx-phone-off'></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
 <body>
 
   <div class="app-container">
@@ -18,11 +62,20 @@
         <h2>Chat App</h2>
       </div>
 
+<script src="script.js"></script>
       <div class="user-profile">
         <div class="avatar-circle"><i class='bx bxs-user'></i></div>
         <div id="me" class="user-name">Đang tải...</div>
         <button id="btnLogout" title="Đăng xuất"><i class='bx bx-log-out'></i></button>
       </div>
+
+            <!-- Menu chỉnh avatar -->
+      <div id="avatarMenu" class="avatar-menu">
+        <button id="avatarMenuChoose">Chọn ảnh avatar</button>
+        <button id="avatarMenuClear">Xóa avatar hiện tại</button>
+        <input type="file" id="avatarMenuInput" accept="image/*" style="display:none">
+      </div>
+
 
       <div class="sidebar-content">
         <section>
