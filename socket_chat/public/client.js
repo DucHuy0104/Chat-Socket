@@ -368,5 +368,110 @@ if (avatarCircle && avatarMenu) {
     avatarMenu.style.display = 'none';
   });
 }
+// ===============================================
+// 🔊 GỬI TIN NHẮN THOẠI (VOICE MESSAGE) - CHỈ THÊM CODE
+// ===============================================
+let mediaRecorder = null;
+let voiceChunks = [];
+const btnRecordVoice = document.getElementById('btnRecordVoice');
+
+// Hàm upload blob audio như 1 file lên /upload-file
+async function uploadVoiceBlob(blob) {
+  if (!blob || !currentRoom || !username) return;
+
+  const fileName = `voice-${Date.now()}.webm`;
+  const file = new File([blob], fileName, { type: 'audio/webm' });
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('room', currentRoom);
+  formData.append('username', username);
+
+  try {
+    const res = await fetch('/upload-file', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      alert('Gửi tin nhắn thoại thất bại: ' + (data.message || 'Lỗi không rõ'));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Lỗi khi gửi tin nhắn thoại: ' + err.message);
+  }
+}
+
+// Bắt đầu / kết thúc ghi âm khi bấm nút micro
+if (btnRecordVoice && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+  btnRecordVoice.addEventListener('click', async () => {
+    try {
+      // Nếu chưa có recorder hoặc đang dừng -> BẮT ĐẦU GHI
+      if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        voiceChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data && e.data.size > 0) {
+            voiceChunks.push(e.data);
+          }
+        };
+
+        mediaRecorder.onstop = async () => {
+          // Dừng mic
+          stream.getTracks().forEach(t => t.stop());
+          btnRecordVoice.classList.remove('recording');
+
+          if (voiceChunks.length === 0) return;
+          const audioBlob = new Blob(voiceChunks, { type: 'audio/webm' });
+          await uploadVoiceBlob(audioBlob);
+        };
+
+        mediaRecorder.start();
+        btnRecordVoice.classList.add('recording');
+      }
+      // Nếu đang ghi -> DỪNG GHI và gửi
+      else if (mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+      }
+    } catch (err) {
+      console.error('Lỗi khi truy cập micro:', err);
+      alert('Không thể truy cập micro. Vui lòng kiểm tra quyền microphone.');
+    }
+  });
+} else if (btnRecordVoice) {
+  // Trình duyệt không hỗ trợ
+  btnRecordVoice.disabled = true;
+  btnRecordVoice.title = 'Trình duyệt không hỗ trợ ghi âm';
+}
+
+// ===============================================
+// HIỂN THỊ AUDIO PLAYER CHO FILE GIỌNG NÓI
+// ===============================================
+socket.on('fileMessage', ({ username: sender, url, original, size, timestamp }) => {
+  // Chỉ xử lý cho file audio (voice webm/mp3/wav)
+  const isAudio = /\.(webm|mp3|wav|ogg)$/i.test(original || '');
+  if (!isAudio) return;
+
+  // Tìm tin nhắn file mới nhất vừa được render
+  const items = messages.querySelectorAll('li');
+  if (!items.length) return;
+  const lastLi = items[items.length - 1];
+
+  // Kiểm tra có link trùng URL không
+  const link = lastLi.querySelector(`a[href="${url}"]`);
+  if (!link) return;
+
+  // Tạo audio player
+  const audio = document.createElement('audio');
+  audio.controls = true;
+  audio.src = url;
+  audio.style.display = 'block';
+  audio.style.marginTop = '5px';
+
+  // Thêm ngay dưới link file
+  link.parentNode.appendChild(audio);
+});
 
 }
