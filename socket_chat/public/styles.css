@@ -543,6 +543,5 @@ body {
 /* Thanh nhập luôn nằm cuối, hơi nhô lên một chút */
 .chat-input-area {
   flex-shrink: 0;
-  margin-bottom: 6px;  /* kéo thanh nhập lê*
-
-
+  margin-bottom: 6px;  /* kéo thanh nhập lên một chút */
+}
