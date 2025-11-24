@@ -809,6 +809,8 @@
       // nếu user đã chọn avatar trên form thì lưu avatar tạm thời
       if (typeof selectedAvatarDataUrl !== 'undefined' && selectedAvatarDataUrl) {
         localStorage.setItem('chat_avatar', selectedAvatarDataUrl);
+      } else {
+        // KHÔNG có avatar khi vào nhanh
         localStorage.removeItem('chat_avatar');
       }
 
