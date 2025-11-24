@@ -636,6 +636,13 @@
         <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V7a5 5 0 0 1 10 0v4"></path><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect></svg>
       </div>
       <button id="btnJoin">Vào phòng ngay</button>
+
+       <!-- nút chế độ khách (join trực tiếp bằng tên) -->
+      <button id="btnGuest" style="margin-top:8px;background:linear-gradient(90deg,#42a5f5,#1e88e5);color:#fff;border:none;padding:12px;border-radius:12px;cursor:pointer;">
+        vào nhanh (Guest)
+      </button>
+
+      <!-- Swicth đăng ký -->
        <div class="auth-switch">
         <span id="authHint">Chưa có tài khoản?</span>
         <button type="button" id="btnToggleAuth">Đăng ký</button>
@@ -755,6 +762,42 @@
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
-  };
+
+  <script>
+    // thêm xử lý cho nút Guest
+    const btnGuest = document.getElementById('btnGuest');
+
+    function handleGuestSubmit() {
+      // nhập tên tạm thời
+      let name = (document.getElementById('loginName') && document.getElementById('loginName').value.trim()) || '';
+      if (!name) {
+        name = prompt('Bạn muốn hiển thị tên gì khi vào chat (khách)?') || ('Guest' + Math.floor(Math.random() * 10000));
+      }
+      // xác nhận tạm thời
+      const ok = confirm(`Bạn sẽ vào với tên "${name}" ở chế độ KHÁCH.\nTài khoản này là tạm thời và sẽ không có mật khẩu.\nTiếp tục?`);
+      if (!ok) return;
+
+      // lưu tạm vào localStorage (chế độ guest)
+      localStorage.setItem('chat_username', name);
+      localStorage.setItem('chat_type', 'guest');
+
+      // nếu user đã chọn avatar trên form thì lưu avatar tạm thời
+      if (typeof selectedAvatarDataUrl !== 'undefined' && selectedAvatarDataUrl) {
+        localStorage.setItem('chat_avatar', selectedAvatarDataUrl);
+      }
+      // chuyển sang trang chat
+      btnGuest.textContent = 'Đang vào...';
+      btnGuest.disabled = true;
+      setTimeout(() => { window.location.href = '/'; }, 200);
+    }
+
+    if (btnGuest) {
+      btnGuest.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleGuestSubmit();
+      });
+    }
+
+  </script>
 </body>
 </html>
