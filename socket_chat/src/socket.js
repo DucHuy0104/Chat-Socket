@@ -65,14 +65,11 @@ export function createSocket(io) {
         // Thông báo trong phòng general
         socket.to(defaultRoom).emit('system', `${username} đã vào phòng ${defaultRoom}`);
 
-        // --- 🔥 TÍNH NĂNG REALTIME ONLINE Ở ĐÂY ---
-        // Ngay khi có người mới vào, gửi danh sách user mới nhất cho TẤT CẢ mọi người
+        // Gửi danh sách online realtime
         io.emit('users_online', Array.from(onlineUsers.keys()));
-        // ------------------------------------------
 
         const rooms = [...new Set([defaultRoom])];
 
-        // Phản hồi cho chính người dùng đó
         ack && ack({
           ok: true,
           rooms,
@@ -206,9 +203,6 @@ export function createSocket(io) {
       const username = socketToUser.get(socket.id);
       console.log('❌ Client disconnected', socket.id, 'reason:', reason, 'user:', username);
 
-      // Xử lý phòng trống (nếu cần)
-      // Lưu ý: socket.rooms đã bị clear khi disconnect fired, nên đoạn này thường không tác dụng 
-      // trừ khi dùng event 'disconnecting'. Nhưng để giữ logic cũ của bạn:
       const rooms = Array.from(socket.rooms).filter((r) => r !== socket.id);
       for (const r of rooms) {
         try {
@@ -221,14 +215,9 @@ export function createSocket(io) {
       if (username) {
         onlineUsers.delete(username);
 
-        // --- 🔥 TÍNH NĂNG REALTIME ONLINE Ở ĐÂY ---
-        // Ngay khi ai đó thoát, gửi danh sách cập nhật cho TẤT CẢ người còn lại
         io.emit('users_online', Array.from(onlineUsers.keys()));
-        // ------------------------------------------
-
         io.emit('system', `${username} đã thoát`);
 
-        // Cập nhật DB trạng thái offline
         const u = await User.findOne({ username });
         if (u) {
           u.socketId = '';
@@ -238,19 +227,16 @@ export function createSocket(io) {
       }
     });
 
-    // --- 9. SỰ KIỆN LẤY USER ONLINE (HỖ TRỢ NÚT REFRESH) ---
-    // Sự kiện này hỗ trợ nếu bạn vẫn giữ nút Refresh thủ công
+    // --- 9. LẤY USER ONLINE (tùy chọn) ---
     socket.on('get_online_users', () => {
-      // Gửi lại danh sách cho riêng người yêu cầu
       socket.emit('users_online', Array.from(onlineUsers.keys()));
     });
-    
-    // (Giữ lại API cũ của bạn nếu Client cũ còn dùng)
+
     socket.on('get_users_online', (ack) => {
       ack && ack({ users: Array.from(onlineUsers.keys()) });
     });
 
-    // --- 10. NHẬN FILE MESSAGE TỪ CLIENT SOCKET ---
+        // --- 10. NHẬN FILE MESSAGE TỪ CLIENT SOCKET ---
     socket.on('file_message', async ({ room, filename, url, size }, ack) => {
       const username = socketToUser.get(socket.id);
       if (!username || !room) return ack && ack({ ok: false });
@@ -264,8 +250,77 @@ export function createSocket(io) {
         metadata: { url, size, type: 'file' }
       });
 
-      io.to(room).emit('file_message', msg); // Hoặc emit 'chat_message' nếu client xử lý chung
+      io.to(room).emit('file_message', msg);
       ack && ack({ ok: true });
     });
-  });
-}
+
+    // --- 11. WEBRTC SIGNALING: CALL 1–1 (VOICE / VIDEO) ---
+    // Gọi đi
+    socket.on('call_user', ({ to, offer, isVideo }) => {
+      const from = socketToUser.get(socket.id);
+      if (!from || !to || !offer) return;
+
+      const targetSocket = onlineUsers.get(to);
+      if (!targetSocket) return;
+
+      io.to(targetSocket).emit('incoming_call', {
+        from,
+        offer,
+        isVideo: !!isVideo
+      });
+    });
+
+    // Người nhận trả lời
+    socket.on('answer_call', ({ to, answer }) => {
+      const from = socketToUser.get(socket.id);
+      if (!from || !to || !answer) return;
+
+      const targetSocket = onlineUsers.get(to);
+      if (!targetSocket) return;
+
+      io.to(targetSocket).emit('call_answered', {
+        from,
+        answer
+      });
+    });
+
+    // Trao đổi ICE candidate
+    socket.on('ice_candidate', ({ to, candidate }) => {
+      const from = socketToUser.get(socket.id);
+      if (!from || !to || !candidate) return;
+
+      const targetSocket = onlineUsers.get(to);
+      if (!targetSocket) return;
+
+      io.to(targetSocket).emit('ice_candidate', {
+        from,
+        candidate
+      });
+    });
+
+    // Kết thúc cuộc gọi
+    socket.on('end_call', ({ to }) => {
+      const from = socketToUser.get(socket.id);
+      if (!from || !to) return;
+
+      const targetSocket = onlineUsers.get(to);
+      if (!targetSocket) return;
+
+      io.to(targetSocket).emit('call_ended', { from });
+    });
+
+    // Người nhận từ chối cuộc gọi
+    socket.on('reject_call', ({ to, reason }) => {
+      const from = socketToUser.get(socket.id);
+      if (!from || !to) return;
+
+      const targetSocket = onlineUsers.get(to);
+      if (!targetSocket) return;
+
+      io.to(targetSocket).emit('call_rejected', {
+        from,
+        reason: reason || 'rejected'
+      });
+    });
+  }); // <--- hết io.on('connection', (socket) => { ... })
+}      // <--- hết export function createSocket(io)
